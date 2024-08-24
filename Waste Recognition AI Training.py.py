@@ -73,7 +73,6 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
               metrics=['accuracy'])
 
 # Step 4: Training the Model
-# Add callbacks for early stopping and learning rate reduction
 early_stopping = EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=7, min_lr=0.0001)
 
@@ -91,7 +90,7 @@ print(f"Validation Accuracy: {val_acc * 100:.2f}%")
 
 import matplotlib.pyplot as plt
 
-# Plot training & validation accuracy values
+# Step 6: Plot training & validation accuracy values
 plt.figure(figsize=(12, 6))
 
 plt.subplot(1, 2, 1)
@@ -102,7 +101,6 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.legend(['Training', 'Validation'], loc='upper left')
 
-# Plot training & validation loss values
 plt.subplot(1, 2, 2)
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
@@ -113,5 +111,11 @@ plt.legend(['Training', 'Validation'], loc='upper left')
 
 plt.show()
 
-# Step 6: Save the Model
+# Step 7: Save the Model
 model.save('smart_waste_bin_model.h5')
+
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+with open('waste_classification_model.tflite', 'wb') as f:
+    f.write(tflite_model)
